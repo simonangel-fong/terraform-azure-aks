@@ -162,53 +162,25 @@ KUBECONFIG=./kubeconfig kubectl get nodes      # node should be Ready
 
 ---
 
-## Phase 5 — Argocd handoff marker
+## Phase 5 — Argocd Deployment
 
 - Goal:
-  - leave a clear seam between `infra/` and the `argocd/` tier.
-  - **No Argo CD resources created here** — installation lives in the `argocd/` tier (Helm / kubernetes provider) and is out of scope for this plan.
-
-- Files to create:
-  - `08_argocd.tf`: comment-only placeholder explaining that Argo CD is installed by the next tier and pointing at the relevant outputs in `04_outputs.tf`
+  - deploy argocd on aks
 
 - Checkpoint:
 
 ```sh
-terraform plan      # expect: No changes (placeholder is comments only)
+terraform plan    
+
+# Get kubeconfig
+az aks get-credentials -g rg-aks-demo-dev -n aks-demo-dev --overwrite-existing
+
+# Retrieve bootstrap admin password
+KUBECONFIG=./kubeconfig kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+
+# Port-forward the UI to localhost:8080
+KUBECONFIG=./kubeconfig kubectl -n argocd port-forward svc/argocd-server 8080:443
+
 ```
 
 ---
-
-## Phase 6 — Smoke test
-
-Goal: confirm the cluster is healthy enough to host Argo CD.
-
-Checks:
-
-- [ ] `kubectl get nodes` → 1 node `Ready`
-- [ ] `kubectl get pods -A` → kube-system pods all `Running`
-- [ ] `kubectl get sc` → default StorageClass present
-- [ ] `kubectl auth can-i create namespace` → `yes`
-
-If any fail, stop and diagnose before moving on.
-
----
-
-## Definition of done
-
-- `terraform apply` in `infra/` is idempotent (second run shows "no changes")
-- `kubectl --kubeconfig=./kubeconfig get nodes` returns a Ready node
-- All outputs in Phase 4 resolve (non-empty)
-- `08_argocd.tf` placeholder is present and documents the handoff to the `argocd/` tier
-- `infra/README.md` documents the apply/destroy commands and the handoff option chosen
-
----
-
-## Out of scope for `infra/`
-
-- Argo CD, ingress-nginx, monitoring, nginx-demo — all live in `argocd/` and `app/`
-- Remote state backend (Azure Storage) — noted for later
-- Multiple node pools, autoscaling, spot nodes
-- Private cluster, API server authorized IP ranges
-- Azure AD integration for cluster RBAC
-- Log Analytics / Container Insights
