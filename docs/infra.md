@@ -17,11 +17,10 @@ az account set --subscription $SUB_ID
 RG_NAME="rg-aks-demo-dev"
 AKS_NAME="aks-demo-dev"
 
-az aks get-credentials --name $AKS_NAME --resource-group $RG_NAME
-
-az aks get-credentials --resource-group "rg-aks-demo-dev" --name "aks-demo-dev"
+az aks get-credentials -g $RG_NAME -n $AKS_NAME --file ./kubeconfig --overwrite-existing
+KUBECONFIG=./kubeconfig kubectl get nodes      # node should be Ready
 
 kubectl get node
-# NAME                              STATUS   ROLES    AGE   VERSION
-# aks-general-87655435-vmss000000   Ready    <none>   11m   v1.35.5
+# NAME                              STATUS   ROLES    AGE     VERSION
+# aks-general-21123181-vmss000000   Ready    <none>   3m50s   v1.35.5
 ```

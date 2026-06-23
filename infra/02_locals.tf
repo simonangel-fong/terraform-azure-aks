@@ -1,3 +1,5 @@
+# locals.tf
+
 locals {
 
   # ####################
@@ -23,12 +25,11 @@ locals {
   aks_dns_service_ip = "10.0.64.10"
 
   node_count   = 1
-  node_vm_size = "Standard_B2s"
+  node_vm_size = "standard_d2s_v7"
 
   # ####################
   # Networking
   # ####################
   vnet_cidr    = "10.10.0.0/16"
-  subnet1_cidr = "10.10.0.0/20"  # 4,091
-  subnet2_cidr = "10.10.32.0/20" # 4,091
+  subnet1_cidr = "10.10.0.0/20" # 4,091
 }

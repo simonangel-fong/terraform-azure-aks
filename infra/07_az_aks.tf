@@ -18,12 +18,13 @@ resource "azurerm_kubernetes_cluster" "main" {
   name                = local.common_name
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-  dns_prefix          = local.project_name
 
   kubernetes_version        = local.aks_versions
   automatic_upgrade_channel = "stable"
-  private_cluster_enabled   = false
-  node_resource_group       = local.common_name
+
+  dns_prefix              = local.common_name
+  private_cluster_enabled = false
+  node_resource_group     = local.common_name
 
   sku_tier = "Free"
 
@@ -37,14 +38,17 @@ resource "azurerm_kubernetes_cluster" "main" {
   }
 
   default_node_pool {
-    name       = "general"
-    node_count = 1
-    vm_size    = "standard_d2ds_v7"
+    name           = "general"
+    vm_size        = local.node_vm_size
+    vnet_subnet_id = azurerm_subnet.main.id
 
-    node_labels = {
-      role = "general"
-    }
+    auto_scaling_enabled = true
+    min_count            = 1
+    max_count            = 5
+
+    node_labels = { role = "general" }
   }
+
 
   identity {
     type         = "UserAssigned"
