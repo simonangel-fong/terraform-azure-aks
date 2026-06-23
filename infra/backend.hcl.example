@@ -1,0 +1,7 @@
+# Usage: terraform -chdir=infra init -backend-config=backend.hcl
+
+bucket       = "bucket_name"
+key          = "key_name"
+region       = "region_name"
+encrypt      = true
+use_lockfile = true
