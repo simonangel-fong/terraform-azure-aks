@@ -18,16 +18,16 @@ Final layout. Files are added **progressively**, one phase at a time — not all
 
 ```
 app/
-├── nginx-demo/                 Local Helm chart
-│   ├── Chart.yaml
-│   ├── values.yaml
-│   └── templates/
-│       ├── configmap.yaml      custom index.html
-│       ├── deployment.yaml
-│       ├── service.yaml
-│       └── ingress.yaml
-└── argocd/
-    └── nginx-demo-app.yaml     Argo CD Application manifest
+└── nginx-demo/                 Local Helm chart (this is what Argo CD syncs)
+    ├── Chart.yaml
+    ├── values.yaml
+    └── templates/
+        ├── configmap.yaml      custom index.html
+        ├── deployment.yaml
+        ├── service.yaml
+        └── ingress.yaml
+argocd/
+└── nginx-demo-app.yaml         Argo CD Application manifest (applied manually with kubectl, not synced by Argo CD)
 ```
 
 Repo source for Argo CD: `https://github.com/simonangel-fong/terraform-azure-aks`, branch `master`, path `app/nginx-demo`.
@@ -49,7 +49,7 @@ Verify before touching the app tier.
 
 ---
 
-## Phase 1 — Minimal nginx web app (single pod, no Argo CD yet)
+## Phase 1 — Minimal nginx web app (single pod, no Argo CD yet) ✅
 
 - Goal:
   - smallest possible local Helm chart that renders a running nginx pod with a custom landing page
@@ -96,7 +96,7 @@ kubectl delete ns web
 
 ---
 
-## Phase 2 — Replicas
+## Phase 2 — Replicas ✅
 
 - Goal:
   - scale the Deployment to multiple replicas, confirm Service load-balances across pods
@@ -123,14 +123,14 @@ kubectl delete ns web
 
 ---
 
-## Phase 3 — Ingress (ingress-nginx + Ingress resource)
+## Phase 3 — Ingress (ingress-nginx + Ingress resource) ✅
 
 - Goal:
   - install the ingress-nginx controller (creates an Azure LB + public IP)
   - add an `Ingress` resource to the chart, route `/` to the nginx-demo Service
   - reach the app from the browser via the LB public IP — no port-forward
 
-- Sub-step 3a — install ingress-nginx controller (one-time, cluster-wide):
+- Sub-step 3a — install ingress-nginx controller (one-time, cluster-wide, run manually — not committed to this repo and not managed by Argo CD):
   ```sh
   helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
   helm repo update
@@ -173,7 +173,7 @@ kubectl delete ns web
 
 ---
 
-## Phase 4 — Verify the Azure Load Balancer
+## Phase 4 — Verify the Azure Load Balancer ✅
 
 - Goal:
   - confirm AKS provisioned an Azure LB + public IP in the **node resource group** (not the main RG)
@@ -216,7 +216,7 @@ If the IP matches and `curl http://$LB_IP/` still returns the landing page, the 
   - app reconciles automatically from this repo
 
 - Files to create:
-  - `app/argocd/nginx-demo-app.yaml`: Argo CD `Application` (apiVersion `argoproj.io/v1alpha1`)
+  - `argocd/nginx-demo-app.yaml`: Argo CD `Application` (apiVersion `argoproj.io/v1alpha1`)
     - `metadata.name: nginx-demo`, `metadata.namespace: argocd`
     - `spec.project: default`
     - `spec.source`:
@@ -236,7 +236,7 @@ helm uninstall nginx-demo -n web --ignore-not-found
 kubectl delete ns web --ignore-not-found
 
 # hand off
-kubectl apply -f app/argocd/nginx-demo-app.yaml
+kubectl apply -f argocd/nginx-demo-app.yaml
 
 # Argo CD picks it up
 kubectl -n argocd get applications

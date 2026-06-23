@@ -8,3 +8,8 @@ service:
 indexHtml: |
   <h1>nginx-demo on AKS</h1>
   <p>Served by Argo CD + local Helm chart.</p>
+ingress:
+  enabled: true
+  className: nginx
+  path: /
+  pathType: Prefix
