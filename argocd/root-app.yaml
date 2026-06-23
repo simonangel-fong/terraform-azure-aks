@@ -1,22 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: nginx-demo
+  name: root
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/simonangel-fong/terraform-azure-aks
     targetRevision: master
-    path: app/nginx-demo
-    helm:
-      releaseName: nginx-demo
+    path: argocd/apps
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
-    namespace: web
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
