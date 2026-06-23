@@ -1,0 +1,10 @@
+image:
+  repository: nginx
+  tag: alpine
+replicaCount: 3
+service:
+  type: ClusterIP
+  port: 80
+indexHtml: |
+  <h1>nginx-demo on AKS</h1>
+  <p>Served by Argo CD + local Helm chart.</p>
