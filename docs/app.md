@@ -1,5 +1,15 @@
+# Application
 
-## Deploy app
+[Back](../README.md)
+
+- [Application](#application)
+  - [Deploy app with Helm](#deploy-app-with-helm)
+  - [Confirm LB](#confirm-lb)
+  - [Deploy Root in ArgoCD](#deploy-root-in-argocd)
+
+---
+
+## Deploy app with Helm
 
 ```sh
 helm lint app/nginx-demo
@@ -8,7 +18,7 @@ helm template app/nginx-demo
 # install manually into a throwaway namespace
 kubectl create ns web
 helm install nginx-demo app/nginx-demo -n web
-kubectl -n web get pods,svc 
+kubectl -n web get pods,svc
 # NAME                              READY   STATUS    RESTARTS   AGE
 # pod/nginx-demo-78c4848757-rpgns   1/1     Running   0          6s
 
@@ -52,7 +62,7 @@ kubectl -n argocd get applications
 
 ---
 
-## ArgoCD
+## Deploy Root in ArgoCD
 
 ```sh
 kubectl apply -f argocd/root-app.yaml

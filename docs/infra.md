@@ -1,3 +1,15 @@
+# Infrastructure
+
+[Back](../README.md)
+
+- [Infrastructure](#infrastructure)
+  - [Provision Infrastructures with Terraform](#provision-infrastructures-with-terraform)
+  - [Access AKS via kubectl](#access-aks-via-kubectl)
+
+---
+
+## Provision Infrastructures with Terraform
+
 ```sh
 terraform -chdir=infra init -backend-config=backend.hcl
 terraform -chdir=infra fmt && terraform -chdir=infra validate
@@ -6,6 +18,10 @@ terraform -chdir=infra apply -auto-approve
 
 terraform -chdir=infra destroy -auto-approve
 ```
+
+---
+
+## Access AKS via kubectl
 
 ```sh
 az login
