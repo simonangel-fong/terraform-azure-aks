@@ -49,3 +49,11 @@ kubectl -n argocd get applications
 # NAME         SYNC STATUS   HEALTH STATUS
 # nginx-demo   Synced        Healthy
 ```
+
+---
+
+## ArgoCD
+
+```sh
+kubectl apply -f argocd/root-app.yaml
+```
